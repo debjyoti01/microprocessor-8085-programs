@@ -1,0 +1,47 @@
+;<n chose r using stack>
+;Given n and r  stored at location 9000H and 9001H, find (n \choose r) using recursive subroutine call.
+;The result, also 8-bit is to be stored at location 9002H.
+
+
+
+lxi sp,0ff00h	;initialize the stack pointer
+lxi h,9000h
+mov b,m
+inx h
+mov c,m
+call comb	;subroutine call
+inx h
+mov m,d
+hlt
+
+comb:	mov a,b		;subroutine comb
+	sub c
+	cmp c
+	jnc skip	;store minimum between c and b-c at c
+	mov c,a
+
+skip: 	mov a,c
+	ani 0ffh
+	jnz notzero	;check c is zero or not
+	mvi d,01h
+	ret
+	
+notzero:	mov a,c
+	mvi d,01h
+	cmp d
+	jnz notone	;check c is one or not
+	mov d,b
+	ret
+
+notone:	dcr b
+	push b
+	call comb
+	pop b
+	push d
+	dcr c
+	call comb
+	mov a,d
+	pop d
+	add d
+	mov d,a
+	ret

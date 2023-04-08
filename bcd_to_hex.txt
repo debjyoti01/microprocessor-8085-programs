@@ -1,0 +1,37 @@
+
+;this code convert bcd number to hexadecimal number
+lxi sp,0ff00h
+lxi h,data
+mov c,m
+dcr c
+inx h
+mov e,m
+mvi d,00h
+jz end
+
+loop: 	call multi10
+	inx h
+	mov a,m
+	add e
+	mov e,a
+	jnc skip
+	inr d
+skip:	dcr c
+	jnz loop
+end:	hlt
+
+
+multi10: push h
+	lxi h,0000
+	dad d
+	dad h
+	xchg
+	dad h
+	dad h
+	dad h
+	dad d
+	xchg
+	pop h
+	ret
+
+data: db 04,04,03,06,07,02

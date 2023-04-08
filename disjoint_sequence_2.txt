@@ -1,0 +1,49 @@
+;Given two numbers x and y, stored at some location in memory, write ALP to find
+;2. find d disjoint sequence of numbers a_0, a_1, ... a_d where a_0=x, a_d=y and each number in the sequence differs from its previous number by exactly one bit.
+;data x stores at 9000h,data y stores at 9001h and d stores at 9002h
+;next d bits from 9003h stores the result a_0, a_1, ... a_d
+;after the program result(a_d) stores at 9050h
+
+lxi h,9000h;	get data from memory
+mov a,m
+inx h
+mov b,m
+
+inx h
+xra b
+mvi c,08h
+mvi b,00h
+
+loop1:	rlc;	count the number of bit and stores a_0, a_1, ... a_d
+	jnc skip
+	inr b
+	mov e,c
+	mov d,a
+	mvi a,00h
+loop2:	ral
+	stc
+	cmc
+	dcr e
+	jnz loop2
+	inx h
+	mov m,a
+	mov a,d
+skip:	dcr c
+	jnz loop1
+
+mov a,b
+sta 9002h;	stores the number of bit difference at 9002h
+
+lxi h,9000h
+mov a,m;	get x
+lxi h,9002h
+mov c,m
+
+inx h
+loop3:	xra m	;XOR d bits with a 
+	inx h
+	dcr c
+	jnz loop3
+
+sta 9050h
+hlt

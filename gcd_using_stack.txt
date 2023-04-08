@@ -1,0 +1,22 @@
+
+;calculate GCD using Stack
+
+lxi sp,0ff00h
+lxi h,9000h
+mvi b,09
+mvi c,18
+call gcd
+mov m,c
+
+hlt
+
+gcd:	mov a,b
+loop:	cmp c
+	jc nosub
+	sub c
+	rz
+	jmp loop
+nosub:	mov b,c
+	mov c,a
+	call gcd
+	ret

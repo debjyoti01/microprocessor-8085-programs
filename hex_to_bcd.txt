@@ -1,0 +1,48 @@
+;Given a 16 bit number stored in location 9000H, write an ALP to convert it to an unpacked BCD number stored from location 9002H onwards.
+;Lower order bits stored at 9000h and Higher order bits stored at 9001h
+;BCD numbers stored at 9002h onwards
+
+
+lxi sp,0ff00h
+lxi h,9000h
+mov e,m
+inx h
+mov d,m
+inx h
+
+loop1:	call division10 ;subroutine call
+	inx h	
+	mov a,d
+	ora e 
+	jnz loop1
+hlt
+
+
+
+division10: mvi b,0ah	;divisor 10
+push h
+mov h,d		;MSB of dividend
+mov l,e		;LSB of dividend
+mvi c,10h
+mvi a,00h	;remainder
+lxi d,0000h	;quotent
+
+loop2:	dad h
+	ral
+	jnc skip1
+	sub b
+	jmp skip2
+	skip1:	cmp b
+	jc nosub
+	sub b
+	skip2:	inx d
+	nosub:	dcr c
+	jz end
+	xchg
+	dad h
+	xchg
+	jmp loop2
+
+end:	pop h
+mov m,a
+ret

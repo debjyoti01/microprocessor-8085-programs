@@ -1,0 +1,51 @@
+
+;Write an ALP to multiply two 16-bit numbers by shift and add
+
+;1st number read from 9000h and 9001h
+;higher order byte of 1st number store at 9001h and lower 9000h
+
+;2nd number read from 9002h and 9003h
+;higher order byte of 2nd number store at 9003h and lower 9002h
+
+;output store at 9004h and 9005h
+;higher order byte of output store at 9005h and lower 9004h
+
+lxi h,9000h
+mov e,m
+inx h
+mov d,m
+inx h
+mov a,m
+inx h
+mov b,m
+
+;this loop calculate the value of lower order byte
+mvi c,08h
+lxi h,0000h
+loop:	rrc
+	jnc skip
+	dad d
+	skip: 	xchg
+	dad h
+	xchg
+	dcr c
+	jnz loop
+
+;this loop calculate the value of heigher order byte
+mov a,b
+mvi c,08h
+loop2:	rrc
+	jnc skip2
+	dad d
+	skip2: 	xchg
+	dad h
+	xchg
+	dcr c
+	jnz loop2
+
+mov a,l
+sta 9004h
+mov a,h
+sta 9005h
+
+hlt

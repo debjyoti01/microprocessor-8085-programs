@@ -1,0 +1,58 @@
+;Read from memory location 9000H the value of r (assume that r is not more than 8). Write an ALP with recursion to generate all 8-bit words with r 1's. 
+;results stored at 9001h onwards
+
+lxi sp,0ff00h
+lxi h,9000h
+mov e,m		;get the number of 1's
+mvi c,08h
+mvi b,00h
+inx h
+call genarate
+hlt
+
+
+genarate: mvi a,00h	;genarate number with n times 1's
+	cmp c
+	jnz skip
+	mov m,b
+	inx h
+	ret	;if remaining word count is 0 then return
+	
+skip: 	mov a,e
+	cmp c
+	jnz skip2
+loop2:	call setbit
+	dcr c
+	jnz loop2
+	mov m,b
+	inx h
+	ret	;if remaining word count is eqaul to number of remaining 1's then set remaining bits 1 and return
+	
+skip2:	push b
+	mvi a,00h
+	cmp e
+	jz skip3	;if number 1 count over
+	push d
+	dcr e
+	call setbit
+	dcr c
+	call genarate
+	pop d
+
+skip3:	pop b
+	dcr c
+	call genarate
+
+	ret
+
+
+
+setbit: stc	;set the cth bit to 1
+	mov d,c
+	mvi a,00h
+loop:	ral
+	dcr d
+	jnz loop
+	ora b
+	mov b,a
+	ret

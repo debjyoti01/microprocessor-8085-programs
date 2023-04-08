@@ -1,0 +1,57 @@
+;multiply two 8-bit signed numbers (negative number is represented as 2's complement)
+
+;1st number store at 9000h
+;2nd number store at 9001h
+;output stores at 9002h and 9003h
+;higer order byte of output store at 9003h and lower order byte 9002h
+
+;store the number in register and the sign accordingly
+lxi h,9000h
+mov e,m
+mov a,m
+ani 80h
+jz skip1
+mvi d,0ffh
+jmp skip2
+skip1:	mvi d,00h
+skip2: inx h
+
+mov c,m
+mov a,m
+ani 80h
+jz skip3
+mvi b,0ffh
+jmp skip4
+skip3:	mvi b,00h
+skip4:	mov a,c
+
+;this loop calculate the value of lower order byte
+mvi c,08h
+lxi h,0000h
+loop:	rrc
+	jnc skip5
+	dad d
+	skip5: 	xchg
+	dad h
+	xchg
+	dcr c
+	jnz loop
+
+;this loop calculate the value of heigher order byte
+mov a,b
+mvi c,08h
+loop2:	rrc
+	jnc skip6
+	dad d
+	skip6: 	xchg
+	dad h
+	xchg
+	dcr c
+	jnz loop2
+
+mov a,l
+sta 9002h
+mov a,h
+sta 9003h
+
+hlt

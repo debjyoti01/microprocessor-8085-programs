@@ -1,0 +1,22 @@
+;Given two numbers x and y, stored at some location in memory, write ALP to find
+;1. d, the number of bits by which x and y differ
+;data x stores at 9000h,data y stores at 9001h and d stores at 9002h
+
+lxi h,9000h;	get data from memory
+mov a,m
+inx h
+mov b,m
+
+xra b
+mvi c,08h
+mvi d,00h
+
+loop:	rlc;	count the number of bit 
+	jnc skip
+	inr d
+skip:	dcr c
+	jnz loop
+
+mov a,d
+sta 9002h
+hlt
